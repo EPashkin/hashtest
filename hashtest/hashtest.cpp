@@ -42,11 +42,12 @@ void hashfile(int h)
 	size_t in_sz = 64 * 1024;
 	unsigned char *in_buf = (unsigned char*) malloc(in_sz);
 	git_SHA_CTX c;
+	git_SHA1_Init(&c);
+
+	//для совпадения с git
 	_lseek(h, 0, SEEK_END);
 	__int64 len = _telli64(h);
-
 	int n = sprintf_s((char *)in_buf, in_sz, "blob %llu", len) + 1;
-	git_SHA1_Init(&c);
 	git_SHA1_Update(&c, in_buf, n);
 
 	_lseek(h, 0, SEEK_SET);
