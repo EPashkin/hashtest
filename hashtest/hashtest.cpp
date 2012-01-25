@@ -27,19 +27,12 @@ void ShowError(const char *errstr)
 }
 void ShowHexString(unsigned char* buf, int len)
 {
-	char *strbuf=(char*) malloc(len*2 +1);
-	char *str = strbuf;
 	do
 	{
 		unsigned val = *buf++;
-		sprintf_s(str, 3, "%02X", val);
-		str+=2;
+		printf("%02X", val);
 	}
 	while(--len > 0);
-	*str=0;
-	puts(strbuf);
-	putchar('\n');
-	free(strbuf);
 }
 
 void hashfile(int h)
@@ -68,6 +61,20 @@ void hashfile(int h)
 
 	ShowHexString(sha1, sizeof(sha1));
 }
+
+bool dohashfile(const char *fname)
+{
+	int h;
+	_sopen_s(&h,fname, _O_RDONLY|_O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
+	if(h < 0)
+		return false;
+	hashfile(h);
+	_close(h);
+	putchar(' ');
+	puts(fname);
+	return true;
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	if(argc < 2 || strlen(argv[1]) == 0)
@@ -75,19 +82,8 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShowHelp();
 	}
 	char *fname = argv[1];
-
-	int h;
-	_sopen_s(&h,fname, _O_RDONLY|_O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
-	if(h < 0)
-	{
+	if(!dohashfile(fname))
 		ShowError("Error open file");
-	}
-	hashfile(h);
-
-	_close(h);
-
-
 
 	return 0;
 }
-
