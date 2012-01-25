@@ -11,10 +11,11 @@
 #include <share.h>
 #include "sha1.h"
 
+const int MAX_PATH=0x00000104*2; //*2 на всякий случай
 
 void ShowHelp()
 {
-	puts("Usage:\nhashtest <filename>\n");
+	puts("Usage:\nhashtest <filename>\n or\nhashtest <dirname>\\\n");
 	exit(0);
 }
 
@@ -75,6 +76,36 @@ bool dohashfile(const char *fname)
 	return true;
 }
 
+bool scandir(const char *dir)
+{
+	char namebuf[MAX_PATH];
+	strcpy_s(namebuf, MAX_PATH, dir);
+	int dirlen = strlen(namebuf);
+	int lastlen = MAX_PATH - dirlen;
+	char *s = namebuf + dirlen;
+	strcpy_s(s, lastlen, "*.*");
+
+	_finddata_t ffd;
+	intptr_t h = _findfirst(namebuf, &ffd);
+	if(h == -1)
+		return false;
+	do
+	{
+		if(ffd.name[0] == '.' && (ffd.name[1] == 0 || (ffd.name[1] == '.' && ffd.name[2] == 0)))
+			continue;
+		strcpy_s(s, lastlen, ffd.name);
+		if(ffd.attrib & _A_SUBDIR)
+		{
+			strcat_s(s, lastlen, "\\");
+			scandir(namebuf);
+		}
+		else
+			dohashfile(namebuf);
+	} while (_findnext(h, &ffd) == 0);
+	_findclose(h);
+	return true;
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	if(argc < 2 || strlen(argv[1]) == 0)
@@ -82,8 +113,15 @@ int _tmain(int argc, _TCHAR* argv[])
 		ShowHelp();
 	}
 	char *fname = argv[1];
-	if(!dohashfile(fname))
-		ShowError("Error open file");
+	if(fname[strlen(fname)-1] == '\\')
+	{
+		scandir(fname);
+	}
+	else
+	{
+		if(!dohashfile(fname))
+			ShowError("Error open file");
+	}
 
 	return 0;
 }
