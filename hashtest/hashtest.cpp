@@ -10,8 +10,7 @@
 #include <sys/stat.h>
 #include <share.h>
 #include "sha1.h"
-
-const int MAX_PATH=0x00000104*2; //*2 на всякий случай
+#include "..\km\km.h"
 
 void ShowHelp()
 {
@@ -64,16 +63,39 @@ void hashfile(int h)
 	ShowHexString(sha1, sizeof(sha1));
 }
 
+BYTE *CreateFileMap(const char *chFileName, DWORD *pdwFileSize, HANDLE &hFileForMap, HANDLE &hFileMap);
+void FreeFileMap(char *chFileMap, HANDLE &hFileForMap, HANDLE &hFileMap);
+
+void hashfile2(const char *fname)
+{
+    unsigned char hash[32];
+    long actual_hash_size = sizeof(hash);
+    size_t in_sz = 64 * 1024;
+    unsigned char *in_buf = (unsigned char*) malloc(in_sz);
+    memset(hash, 0, sizeof(hash));
+
+    BYTE *pbtFileData=NULL;
+    DWORD dwFileSize=0;
+    HANDLE hFileForMap, hFileMap;
+    BOOL bRc=FALSE;
+
+    pbtFileData=CreateFileMap(fname, &dwFileSize, hFileForMap, hFileMap);
+    if(pbtFileData)
+    {
+        int ret=CreateHash_QP(pbtFileData, dwFileSize, hash, sizeof(hash), &actual_hash_size);
+        if(ret == 0)
+            ShowError("Error hash file");
+        FreeFileMap((char*)pbtFileData, hFileForMap, hFileMap);
+    }
+
+    ShowHexString(hash, actual_hash_size);
+    putchar(' ');
+    puts(fname);
+}
+
 bool dohashfile(const char *fname)
 {
-	int h;
-	_sopen_s(&h,fname, _O_RDONLY|_O_BINARY, _SH_DENYNO, _S_IREAD | _S_IWRITE);
-	if(h < 0)
-		return false;
-	hashfile(h);
-	_close(h);
-	putchar(' ');
-	puts(fname);
+    hashfile2(fname);
 	return true;
 }
 
@@ -125,4 +147,49 @@ int _tmain(int argc, _TCHAR* argv[])
 	}
 
 	return 0;
+}
+
+BYTE *CreateFileMap(const char *chFileName, DWORD *pdwFileSize, HANDLE &hFileForMap, HANDLE &hFileMap)
+{
+    hFileForMap=CreateFile(chFileName, GENERIC_READ, 0, NULL,
+        OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if(hFileForMap==INVALID_HANDLE_VALUE || hFileForMap==NULL)
+        return NULL;
+    hFileMap=CreateFileMapping(hFileForMap, NULL, PAGE_READONLY,
+        0, 0, NULL);
+    if(hFileMap==NULL)
+    {
+        CloseHandle(hFileForMap);
+        return NULL;
+    }
+    BYTE *pFile=(BYTE*)MapViewOfFile(hFileMap, FILE_MAP_READ, 0, 0, 0);
+    if(pFile==NULL)
+    {
+        CloseHandle(hFileMap);
+        CloseHandle(hFileForMap);
+        return NULL;
+    }
+    *pdwFileSize=GetFileSize(hFileForMap, NULL);
+    return (BYTE*)pFile;
+}
+
+void FreeFileMap(char *chFileMap, HANDLE &hFileForMap, HANDLE &hFileMap)
+{
+    char str[500];
+    BOOL bRc=UnmapViewOfFile((void*)chFileMap);
+    if(!bRc)
+    {
+        DWORD dwErr=GetLastError();
+    }
+
+    bRc=CloseHandle(hFileMap);
+    if(!bRc)
+    {
+        DWORD dwErr=GetLastError();
+    }
+    bRc=CloseHandle(hFileForMap);
+    if(!bRc)
+    {
+        DWORD dwErr=GetLastError();
+    }
 }
