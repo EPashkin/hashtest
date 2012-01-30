@@ -4,6 +4,12 @@
 #include "stdafx.h"
 #include <KtmW32.h>
 
+void ShowHelp()
+{
+	puts("Usage:\ncopytest <filename> <network-path>\\\n");
+	exit(0);
+}
+
 int stopproc = 20;
 int oldproc;
 
@@ -47,7 +53,7 @@ int _tmain(int argc, _TCHAR* argv[])
 {
 	if(argc < 3)
 	{
-		return -1;
+		ShowHelp();
 	}
 	char* infname = argv[1];
 	char* fname = strrchr(infname, '\\');
@@ -71,7 +77,7 @@ test:
 		{
 			if(++attempts < 2)
 			{
-				puts("aborted. try continue");
+				puts("aborted. trying resume");
 				goto test;
 			}
 		}
