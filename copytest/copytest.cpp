@@ -45,20 +45,23 @@ DWORD CALLBACK CopyProgressRoutine(
 
 int _tmain(int argc, _TCHAR* argv[])
 {
-	std::string fname;
-//	fname = local file name
-	std::string infname;
-//	infname = Local Path
-	infname += fname;
-	std::string outfname;
-//	outfname = network path
+	if(argc < 3)
+	{
+		return -1;
+	}
+	char* infname = argv[1];
+	char* fname = strrchr(infname, '\\');
+	if(fname == NULL)
+		fname = infname;
+	std::string outfname = argv[2];
 	outfname += fname;
-	outfname += ".ttt";
+	outfname += ".tmp";
 	int attempts = 0;
+	printf("Copying %s\nto %s\n", infname, outfname.c_str());
 
 test:
 	oldproc = -100;
-	BOOL ret = CopyFileEx(infname.c_str(), outfname.c_str(), &CopyProgressRoutine, NULL, NULL, COPY_FILE_RESTARTABLE);
+	BOOL ret = CopyFileEx(infname, outfname.c_str(), &CopyProgressRoutine, NULL, NULL, COPY_FILE_RESTARTABLE);
 	if(ret)
 		puts("File copied");
 	else
