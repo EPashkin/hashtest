@@ -62,6 +62,8 @@ void hashfile(int h)
 	free(in_buf);
 
 	ShowHexString(sha1, sizeof(sha1));
+    putchar('S');
+    ShowHexString((unsigned char*)&len, sizeof(len));
 }
 
 bool dohashfile(const char *fname)
