@@ -15,7 +15,7 @@ const int MAX_PATH=0x00000104*2; //*2 на всякий случай
 
 void ShowHelp()
 {
-	puts("Usage:\nhashtest <filename>\n or\nhashtest <dirname>\\\n");
+	puts("Usage:\nhashtest <filename>\n\tor\nhashtest <dirname>\\\n");
 	exit(0);
 }
 
