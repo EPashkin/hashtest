@@ -13,6 +13,8 @@ typedef struct {
 } blk_SHA_CTX;
 
 #ifdef  __cplusplus
+#pragma comment(lib, "Ws2_32")
+
 extern "C" {
 #endif
 
