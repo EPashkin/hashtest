@@ -9,6 +9,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "copytest", "copytest\copyte
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LockTest", "locktest\LockTest.csproj", "{DA0C23B8-6E0F-4CE1-8FEA-D663F5B244F2}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "splitlines", "splitlines\splitlines.vcproj", "{15FA373E-04AE-4A71-87E0-46E03A324AC5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -31,6 +33,10 @@ Global
 		{DA0C23B8-6E0F-4CE1-8FEA-D663F5B244F2}.Debug|Win32.Build.0 = Debug|Any CPU
 		{DA0C23B8-6E0F-4CE1-8FEA-D663F5B244F2}.Release|Win32.ActiveCfg = Release|Any CPU
 		{DA0C23B8-6E0F-4CE1-8FEA-D663F5B244F2}.Release|Win32.Build.0 = Release|Any CPU
+		{15FA373E-04AE-4A71-87E0-46E03A324AC5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{15FA373E-04AE-4A71-87E0-46E03A324AC5}.Debug|Win32.Build.0 = Debug|Win32
+		{15FA373E-04AE-4A71-87E0-46E03A324AC5}.Release|Win32.ActiveCfg = Release|Win32
+		{15FA373E-04AE-4A71-87E0-46E03A324AC5}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
