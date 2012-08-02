@@ -35,7 +35,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	if(fOut == NULL)
 		return false;
 
-	char buf[1024];
+	char buf[4*1024];
 
 	while(!feof(fIn))
 	{
